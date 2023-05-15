@@ -8,7 +8,8 @@ import Register from "./pages/Register";
 import Admin from "./pages/User/Admin";
 import Resepsionis from "./pages/User/Resepsionis";
 import Dashboard from "./pages/User/Dashboard";
-import AddPemesanan from "./pages/Tamu/AddPemesanan";
+import Reservations from "./pages/Tamu/Reservations";
+import Rooms from "./pages/Tamu/Rooms";
 // import History from "./pages/Tamu/History";
 // import Member from "./pages/Member";
 // import Book from "./pages/Book";
@@ -31,12 +32,13 @@ function App() {
           <Route path="/Sidebar" element={<Sidebar />} />
           <Route path="/Admin" element={<Admin />} />
           <Route path="/Resepsionis" element={<Resepsionis />} />
+          <Route path="/Rooms" element={<Rooms />} />
           {/* <Route path="Member" element={<Member />} />
           <Route path="Book" element={<Book />} />
           <Route path="Borrow" element={<Borrow />} /> */}
           {/* <Route path="History" element={<History />} />  */}
           <Route path="/Register" element={<Register />} />
-          <Route path="/AddPemesanan" element={<AddPemesanan />} />
+          <Route path="/Reservations" element={<Reservations />} />
         </Routes>
       </div>
     </>

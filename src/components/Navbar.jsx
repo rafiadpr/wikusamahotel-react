@@ -23,20 +23,20 @@ function Navbar() {
           <div className="flex items-center justify-between gap-4 lg:gap-10">
             <nav
               aria-label="Site Nav"
-              className="hidden gap-8 text-sm font-medium md:flex fixed z-0 md:z-50"
+              className="hidden gap-8 text-sm font-medium md:flex z-0 md:z-50"
             >
-              <a className="text-gray-500" href="">
+              <a className="text-gray-500" href="/">
                 Home
               </a>
-              <a className="text-gray-500" href="">
+              <a className="text-gray-500" href="Rooms">
                 Rooms
               </a>
-              <a className="text-gray-500" href="">
+              <a className="text-gray-500" href="Reservations">
                 Reservations
               </a>
-              <a className="text-gray-500" href="">
+              {/* <a className="text-gray-500" href="">
                 Reviews
-              </a>
+              </a> */}
             </nav>
 
             <div className="hidden flex-1 items-center justify-end gap-4 sm:flex">
