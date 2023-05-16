@@ -3,56 +3,60 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Reservations() {
-  const [data, setData] = useState([]);
-  const navigate = useNavigate();
-  const [foto, setFoto] = useState(null);
+  const [nomor_pemesanan, setNomor_pemesanan] = useState("");
+  const [nama_pemesan, setNama_pemesan] = useState("");
+  const [email_pemesan, setEmail_pemesan] = useState("");
+  const [nama_tamu, setNama_tamu] = useState("");
+  const [tgl_check_in, setTgl_check_in] = useState("");
+  const [tgl_check_out, setTgl_check_out] = useState("");
+  const [jumlah_kamar, setJumlah_kamar] = useState(1);
+  const [id_tipe_kamar, setId_tipe_kamar] = useState("single");
+  const [availableRooms, setAvailableRooms] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/pemesanan")
-      .then((res) => {
-        // console.log(res.data);
-        setData(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-  console.log(data);
-
-  function handleChange(e) {
-    // console.log(e.target.value);
-    const { name, value } = e.target;
-    console.log({ ...data, [name]: value });
-    setData({ ...data, [name]: value });
-  }
-
-  function handleFileChange(e) {
-    setFoto(e.target.files[0]);
-  }
-
-  function handleSubmit(e) {
+  const handleCheckAvailability = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("nama_pemesan", data.nama_pemesan);
-    formData.append("email_pemesan", data.email_pemesan);
-    formData.append("tgl_check_in", data.tgl_check_in);
-    formData.append("tgl_check_out", data.tgl_check_out);
-    formData.append("nama_tamu", data.nama_tamu);
-    formData.append("jumlah_kamar", data.jumlah_kamar);
-    formData.append("tipe_kamar", data.tipe_kamar);
-    formData.append("foto", foto);
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/pemesanan?tgl_check_in=${tgl_check_in}&tgl_check_out=${tgl_check_out}`
+      );
+      setAvailableRooms(response.data);
+    } catch (error) {
+      alert("Failed to check availability. Please try again later.");
+    }
+  };
 
-    axios
-      .post("http://localhost:8000/book", formData)
-      .then((res) => {
-        console.log(res.data.message);
-        navigate(-1);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const reservationData = {
+        nomor_pemesanan,
+        nama_pemesan,
+        email_pemesan,
+        nama_tamu,
+        tgl_check_in,
+        tgl_check_out,
+        jumlah_kamar,
+        id_tipe_kamar,
+      };
+      const response = await axios.post(
+        "http://localhost:8000/pemesanan",
+        reservationData
+      );
+      alert(
+        `Reservation created successfully! Reservation number: ${response.data.nomor_pemesanan}`
+      );
+      setNomor_pemesanan("");
+      setNama_pemesan("");
+      setNama_tamu("");
+      setEmail_pemesan("");
+      setTgl_check_in("");
+      setTgl_check_out("");
+      setJumlah_kamar(1);
+      setId_tipe_kamar("");
+    } catch (error) {
+      alert("Failed to create reservation. Please try again later.");
+    }
+  };
 
   return (
     <>
@@ -90,166 +94,121 @@ function Reservations() {
         </div>
       </div>
 
-      {/* <section className="p-6  dark:text-gray-50 h-screen">
-        <form
-          method="POST"
-          action=""
-          className="container flex flex-col mx-auto space-y-12 ng-untouched ng-pristine ng-valid"
-          onSubmit={(e) => handleSubmit(e)}
-        >
-          <fieldset className="grid grid-cols-3 gap-6 p-6 rounded-md shadow-sm dark:bg-gray-500">
-            <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
-              <div className="col-span-full sm:col-span-3">
-                <label htmlFor="name" className="text-sm">
-                  Nama Pemesan
-                </label>
-                <input
-                  id="nama_pemesan"
-                  name="nama_pemesan"
-                  type="number"
-                  placeholder="Silahkan isi nama anda"
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
-              <div className="col-span-full sm:col-span-3">
-                <label htmlFor="email_pemesan" className="text-sm">
-                  Email_pemesan
-                </label>
-                <input
-                  id="email_pemesan"
-                  name="email_pemesan"
-                  type="text"
-                  placeholder="Email_pemesan"
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
-              <div className="col-span-full sm:col-span-3">
-                <label htmlFor="tgl_check_in" className="text-sm">
-                  Tgl_check_in
-                </label>
-                <input
-                  id="tgl_check_in"
-                  name="tgl_check_in"
-                  type="text"
-                  placeholder="Tgl_check_in"
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
-              <div className="col-span-full sm:col-span-3">
-                <label htmlFor="tgl_check_out" className="text-sm">
-                  Tgl_check_out
-                </label>
-                <input
-                  id="tgl_check_out"
-                  name="tgl_check_out"
-                  type="text"
-                  placeholder="Tgl_check_out"
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
-              <div className="col-span-full sm:col-span-3">
-                <label htmlFor="nama_tamu" className="text-sm">
-                  Nama_tamu
-                </label>
-                <input
-                  id="nama_tamu"
-                  name="nama_tamu"
-                  type="text"
-                  placeholder="Nama_tamu"
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
-              <div className="col-span-full sm:col-span-3">
-                <label htmlFor="jumlah_kamar" className="text-sm">
-                  Jumlah_kamar
-                </label>
-                <input
-                  id="jumlah_kamar"
-                  name="jumlah_kamar"
-                  type="text"
-                  placeholder="Jumlah_kamar"
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
-              <div className="col-span-full">
-                <label htmlFor="foto" className="text-sm">
-                  Foto
-                </label>
-                <input
-                  id="foto"
-                  name="foto"
-                  type="file"
-                  placeholder=""
-                  className="w-full rounded-md focus:ring focus:ring-opacity-75 focus:ring-violet-400 dark:border-gray-700 dark:text-gray-900"
-                  onChange={(e) => handleFileChange(e)}
-                />
-              </div>
-              <button
-                type="submit"
-                className="flex justify-center px-8 py-3 font-semibold rounded-full dark:bg-gray-100 dark:text-gray-800"
-              >
-                Submit
-              </button>
-            </div>
-          </fieldset>
-        </form>
-      </section> */}
-
-      <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-lg text-center">
-          <h1 class="text-2xl font-bold sm:text-3xl">Reservation</h1>
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto mt-8">
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
+            Name:
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={nama_pemesan}
+            onChange={(event) => setNama_pemesan(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          />
         </div>
 
-        <form
-          action=""
-          class="mx-auto mb-0 mt-8 max-w-md space-y-4"
-          method="post"
-          onSubmit={(e) => handleSubmit(e)}
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
+            Email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email_pemesan}
+            onChange={(event) => setEmail_pemesan(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
+            Guest's Name:
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={nama_tamu}
+            onChange={(event) => setNama_tamu(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="checkInDate"
+            className="block text-gray-700 font-bold mb-2"
+          >
+            Check-in Date:
+          </label>
+          <input
+            type="date"
+            id="checkInDate"
+            value={tgl_check_in}
+            onChange={(event) => setTgl_check_in(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="checkOutDate"
+            className="block text-gray-700 font-bold mb-2"
+          >
+            Check-out Date:
+          </label>
+          <input
+            type="date"
+            id="checkOutDate"
+            value={tgl_check_out}
+            onChange={(event) => setTgl_check_out(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="roomCount"
+            className="block text-gray-700 font-bold mb-2"
+          >
+            Number of Rooms:
+          </label>
+          <input
+            type="number"
+            id="roomCount"
+            value={jumlah_kamar}
+            onChange={(event) => setJumlah_kamar(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="roomType"
+            className="block text-gray-700 font-bold mb-2"
+          >
+            Room Type:
+          </label>
+          <select
+            id="roomType"
+            value={id_tipe_kamar}
+            onChange={(event) => setId_tipe_kamar(event.target.value)}
+            className="w-full border border-gray-400 p-2 rounded-md"
+          >
+            <option value="">Pilih Tipe Kamar</option>
+            <option value="1">Single Room</option>
+            <option value="2">Double Room</option>
+            <option value="3">Family Room</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label class="sr-only" for="tgl_check_in">
-                Check In
-              </label>
-              <input
-                class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                placeholder=""
-                type="date"
-                id="tgl_check_in"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-
-            <div>
-              <label class="sr-only" for="tgl_check_out">
-                Check Out
-              </label>
-              <input
-                class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                placeholder=""
-                type="date"
-                id="tgl_check_out"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
-
-          <div class="flex items-center justify-center">
-            <button
-              type="submit"
-              class="inline-block rounded-lg bg-blue-500 px-12 py-3 text-sm font-medium text-white"
-            >
-              Search
-            </button>
-          </div>
-        </form>
-      </div>
+          Create Reservation
+        </button>
+      </form>
     </>
   );
 }

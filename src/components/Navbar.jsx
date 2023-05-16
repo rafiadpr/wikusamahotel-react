@@ -31,12 +31,12 @@ function Navbar() {
               <a className="text-gray-500" href="Rooms">
                 Rooms
               </a>
-              <a className="text-gray-500" href="Reservations">
+              {/* <a className="text-gray-500" href="Reservations">
                 Reservations
-              </a>
-              {/* <a className="text-gray-500" href="">
-                Reviews
               </a> */}
+              <a className="text-gray-500" href="History">
+                Check
+              </a>
             </nav>
 
             <div className="hidden flex-1 items-center justify-end gap-4 sm:flex">
