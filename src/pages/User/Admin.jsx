@@ -17,7 +17,7 @@ function Admin() {
         </div>
         <div className="flex flex-col p-4">
           <a
-            href="/"
+            href="Admin"
             className="text-gray-300 hover:text-white py-2 flex items-center"
           >
             <FiHome className="mr-2" />

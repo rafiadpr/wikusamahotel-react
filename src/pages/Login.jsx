@@ -39,7 +39,7 @@ function Login() {
         localStorage.setItem("admin", JSON.stringify(response.data.data));
         localStorage.setItem("token", response.data.token);
         // localStorage.setItem('email', email);
-        history("/User");
+        history("/Admin");
         handleLogin()
         // alert("Login Berhasil")
       } else {
@@ -80,7 +80,7 @@ function Login() {
               </span>
 
               <input
-                type="text"
+                type="email"
                 className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 placeholder="Email"
                 value={email}
