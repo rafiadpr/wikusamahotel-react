@@ -13,18 +13,6 @@ function Reservations() {
   const [id_tipe_kamar, setId_tipe_kamar] = useState("single");
   const [availableRooms, setAvailableRooms] = useState([]);
 
-  const handleCheckAvailability = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/pemesanan?tgl_check_in=${tgl_check_in}&tgl_check_out=${tgl_check_out}`
-      );
-      setAvailableRooms(response.data);
-    } catch (error) {
-      alert("Failed to check availability. Please try again later.");
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {

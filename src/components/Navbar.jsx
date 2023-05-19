@@ -34,7 +34,7 @@ function Navbar() {
               {/* <a className="text-gray-500" href="Reservations">
                 Reservations
               </a> */}
-              <a className="text-gray-500" href="History">
+              <a className="text-gray-500" href="Check">
                 Check
               </a>
             </nav>
@@ -44,7 +44,7 @@ function Navbar() {
                 className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-500"
                 href="Login"
               >
-                Log in as Admin
+                Log in
               </a>
               {/* <a
                 className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-500"

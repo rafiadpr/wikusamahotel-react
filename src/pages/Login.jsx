@@ -5,14 +5,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 function Login() {
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
-
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   console.log(`Username: ${username}, Password: ${password}`);
-  // };
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const history = useNavigate();
@@ -47,7 +39,7 @@ function Login() {
         localStorage.setItem("admin", JSON.stringify(response.data.data));
         localStorage.setItem("token", response.data.token);
         // localStorage.setItem('email', email);
-        history("/Admin");
+        history("/User");
         handleLogin()
         // alert("Login Berhasil")
       } else {
