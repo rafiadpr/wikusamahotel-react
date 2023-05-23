@@ -1,31 +1,11 @@
-import React from "react";
-// import Sidebar from "../../components/Sidebar";
-import Admin from "./Admin";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const AdminPage = () => {
-  return {Admin}
-};
+function User() {
+  return (
+    <div>User</div>
+  )
+}
 
-const UserPage = () => {
-  return <h1>User Page</h1>;
-};
-
-const GuestPage = () => {
-  return <h1>Guest Page</h1>;
-};
-
-const User = ({ role }) => {
-  let pageComponent;
-
-  if (role === "admin") {
-    pageComponent = <AdminPage />;
-  } else if (role === "user") {
-    pageComponent = <UserPage />;
-  } else {
-    pageComponent = <GuestPage />;
-  }
-
-  return <div>{pageComponent}</div>;
-};
-
-export default User;
+export default User

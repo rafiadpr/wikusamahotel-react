@@ -30,27 +30,6 @@ function Resepsionis() {
             <FiBook className="mr-2" />
             <span>Reservasi</span>
           </a>
-          <a
-            href="Pengguna"
-            className="text-gray-300 hover:text-white py-2 flex items-center"
-          >
-            <FiUser className="mr-2" />
-            <span>Pengguna</span>
-          </a>
-          <a
-            href="Kamar"
-            className="text-gray-300 hover:text-white py-2 flex items-center"
-          >
-            <FiLayers className="mr-2" />
-            <span>Kamar</span>
-          </a>
-          <a
-            href="Tipe Kamar"
-            className="text-gray-300 hover:text-white py-2 flex items-center"
-          >
-            <FiUsers className="mr-2" />
-            <span>Tipe Kamar</span>
-          </a>
           <button
             className="text-gray-300 hover:text-white py-2 flex items-center"
             onClick={handleLogout}

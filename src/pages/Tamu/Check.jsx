@@ -1,70 +1,54 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 function Check() {
-  const [tgl_check_in, setTglCheckIn] = useState("");
-  const [tgl_check_out, setTglCheckOut] = useState("");
-  const [availability, setAvailability] = useState("");
-
-  const handleTglCheckInChange = (event) => {
-    setTglCheckIn(event.target.value);
+  const [data, setData] = useState();
+  // const [messsage, setMessage] = useState("");
+  const handleChange = (e) => {
+    setData({ ...data, [e.target.name]: e.target.value + " 12:00:00" });
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post("http://localhost:8000/pemesanan/check", data).then((e) => {
+      const message = e.data.message;
 
-  const handleTglCheckOutChange = (event) => {
-    setTglCheckOut(event.target.value);
+      if (message === "Room Available") {
+        return toast.success("Room Available");
+      } else {
+        return toast.error("Room Not Available");
+      }
+    });
   };
-
-  const handleCheckAvailability = () => {
-    const modifiedTgl_check_in = tgl_check_in + " 12:00:00";
-    const modifiedTgl_check_out = tgl_check_out + " 12:00:00";
-    axios
-      .post("http://localhost:8000/pemesanan/check", {
-        tgl_check_in: modifiedTgl_check_in,
-        tgl_check_out: modifiedTgl_check_out,
-      })
-      .then((response) => {
-        const availability = response.data.available
-          ? "Available"
-          : "Not Available";
-        setAvailability(availability);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  console.log(data);
   return (
-    <div className="container mx-auto px-4 text-center">
-      <h1 className="text-3xl font-bold mb-4">Periksa Ketersediaan Kamar</h1>
-      <div className="mb-4">
-        <label className="block">Check-in Date:</label>
-        <input
-          type="date"
-          value={tgl_check_in}
-          onChange={handleTglCheckInChange}
-          className="border rounded px-2 py-1 w-40"
-        />
+    <>
+      <div className="container mx-auto p-4 text-center">
+        <h3 className="text-3xl font-bold mb-4">Check Availability</h3>
+        <form action="post" onSubmit={(e) => handleSubmit(e)} className="mb-4">
+          <input
+            type="date"
+            name="tgl_check_in"
+            id=""
+            onChange={(e) => handleChange(e)}
+            className="border border-gray-300 rounded p-2 mb-4"
+          />
+          <input
+            type="date"
+            name="tgl_check_out"
+            id=""
+            onChange={(e) => handleChange(e)}
+            className="border border-gray-300 rounded p-2 mb-4"
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+          >
+            Check
+          </button>
+        </form>
       </div>
-      <div className="mb-4">
-        <label className="block">Check-out Date:</label>
-        <input
-          type="date"
-          value={tgl_check_out}
-          onChange={handleTglCheckOutChange}
-          className="border rounded px-2 py-1 w-40"
-        />
-      </div>
-      <button
-        onClick={handleCheckAvailability}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Periksa
-      </button>
-      {availability ? (
-        <p className="mt-4">
-          Kamar {availability} dari {tgl_check_in} hingga {tgl_check_out}
-        </p>
-      ) : null}
-    </div>
+    </>
   );
 }
 
