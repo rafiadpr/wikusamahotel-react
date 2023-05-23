@@ -1,249 +1,573 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
 import { Dialog } from "@headlessui/react";
+import axios from "axios";
+import {
+  FiHome,
+  FiUser,
+  FiUsers,
+  FiLogOut,
+  FiBook,
+  FiLayers,
+} from "react-icons/fi";
 
-function Reservations() {
-  const [tipeKamar, setTipeKamar] = useState([]);
-  const [reservasi, setReservasi] = useState({
-    nomor_pemesanan: "",
-    nama_pemesan: "",
-    email_pemesan: "",
-    tgl_check_in: "",
-    tgl_check_out: "",
-    nama_tamu: "",
-    jumlah_kamar: "",
-    id_tipe_kamar: "1",
-    detail_pemesanan: [
-      {
-        id_kamar: "",
-        harga: "",
-      },
-    ],
-  });
-  const [dataPemesanan, setDataPemesanan] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPemesanan, setSelectedPemesanan] = useState(null);
+function Reservasi() {
+  const [data, setData] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [pemesanan, setPemesanan] = useState();
+  const [nomorPemesanan, setNomorPemesanan] = useState("");
+  const [namaPemesan, setNamaPemesan] = useState("");
+  const [emailPemesan, setEmailPemesan] = useState("");
+  const [tglPemesanan, setTglPemesanan] = useState("");
+  const [tglCheckIn, setTglCheckIn] = useState("");
+  const [tglCheckOut, setTglCheckOut] = useState("");
+  const [namaTamu, setNamaTamu] = useState("");
+  const [jumlahKamar, setJumlahKamar] = useState("");
+  const [idTipeKamar, setIdTipeKamar] = useState("");
+  const [statusPemesanan, setStatusPemesanan] = useState("");
+  const [idUser, setIdUser] = useState("");
+  // const url = "http://localhost:8000/foto/";
 
   useEffect(() => {
-    axios.get("http://localhost:8000/tipekamar").then((res) => {
-      setTipeKamar(res.data.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    axios.get("http://localhost:8000/pemesanan").then((res) => {
-      setDataPemesanan(res.data.data);
-    });
-  }, []);
-
-  const handleChange = (e) => {
-    setReservasi({ ...reservasi, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post("http://localhost:8000/pemesanan", reservasi).then((e) => {
-      const message = e.data.message;
-
-      if (message === "New pemesanan has been inserted with details.") {
-        toast.success("Pemesanan Sukses");
-        // Reset form
-        setReservasi({
-          nomor_pemesanan: "",
-          nama_pemesan: "",
-          email_pemesan: "",
-          tgl_check_in: "",
-          tgl_check_out: "",
-          nama_tamu: "",
-          jumlah_kamar: "",
-          id_tipe_kamar: "1",
-          detail_pemesanan: [
-            {
-              id_kamar: "",
-              harga: "",
-            },
-          ],
-        });
-        setShowModal(false);
-      } else {
-        toast.error("Pemesanan Gagal");
-      }
-    });
-  };
-
-  const handleEdit = (pemesanan) => {
-    setSelectedPemesanan(pemesanan);
-    setShowModal(true);
-  };
-
-  const handleDelete = (pemesanan) => {
-    axios.delete(`http://localhost:8000/pemesanan/${pemesanan.id}`).then((res) => {
-      toast.success("Data Pemesanan berhasil dihapus");
-      // Refresh data pemesanan setelah penghapusan
-      axios.get("http://localhost:8000/pemesanan").then((res) => {
-        setDataPemesanan(res.data.data);
+    axios
+      .get("http://localhost:8000/pemesanan")
+      .then((res) => {
+        setData(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    });
+  }, []);
+
+  const handleDelete = (id) => {
+    axios
+      .delete(`http://localhost:8000/pemesanan/${id}`)
+      .then((res) => {
+        console.log(res.data.message);
+        setData(data.filter((item) => item.id !== id));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("logged");
+    localStorage.removeItem("admin");
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const handleAdd = () => {
+    axios
+      .post("http://localhost:8000/pemesanan", {
+        nomor_pemesanan: nomorPemesanan,
+        nama_pemesan: namaPemesan,
+        email_pemesan: emailPemesan,
+        tgl_pemesanan: tglPemesanan,
+        tgl_check_in: tglCheckIn,
+        tgl_check_out: tglCheckOut,
+        nama_tamu: namaTamu,
+        jumlah_kamar: jumlahKamar,
+        id_tipe_kamar: idTipeKamar,
+        status_pemesanan: statusPemesanan,
+        id_user: idUser,
+      })
+      .then((res) => {
+        console.log(res.data.message);
+        setModalOpen(false);
+        setSelectedItem(null);
+        setNomorPemesanan("");
+        setNamaPemesan("");
+        setEmailPemesan("");
+        setTglPemesanan("");
+        setTglCheckIn("");
+        setTglCheckOut("");
+        setNamaTamu("");
+        setJumlahKamar("");
+        setIdTipeKamar("");
+        setStatusPemesanan("");
+        setIdUser("");
+        setData([...data, res.data.data]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleEdit = () => {
+    axios
+      .put(`http://localhost:8000/pemesanan/${selectedItem.id}`, {
+        nomor_pemesanan: nomorPemesanan,
+        nama_pemesan: namaPemesan,
+        email_pemesan: emailPemesan,
+        tgl_pemesanan: tglPemesanan,
+        tgl_check_in: tglCheckIn,
+        tgl_check_out: tglCheckOut,
+        nama_tamu: namaTamu,
+        jumlah_kamar: jumlahKamar,
+        id_tipe_kamar: idTipeKamar,
+        status_pemesanan: statusPemesanan,
+        id_user: idUser,
+      })
+      .then((res) => {
+        console.log(res.data.message);
+        setModalOpen(false);
+        setSelectedItem(null);
+        setNomorPemesanan("");
+        setNamaPemesan("");
+        setEmailPemesan("");
+        setTglPemesanan("");
+        setTglCheckIn("");
+        setTglCheckOut("");
+        setNamaTamu("");
+        setJumlahKamar("");
+        setIdTipeKamar("");
+        setStatusPemesanan("");
+        setIdUser("");
+        setData(
+          data.map((item) => {
+            if (item.id === selectedItem.id) {
+              return {
+                ...item,
+                nomor_pemesanan: nomorPemesanan,
+                nama_pemesan: namaPemesan,
+                email_pemesan: emailPemesan,
+                tgl_pemesanan: tglPemesanan,
+                tgl_check_in: tglCheckIn,
+                tgl_check_out: tglCheckOut,
+                nama_tamu: namaTamu,
+                jumlah_kamar: jumlahKamar,
+                id_tipe_kamar: idTipeKamar,
+                status_pemesanan: statusPemesanan,
+                id_user: idUser,
+              };
+            }
+            return item;
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
-    <div className="container mx-auto">
-      <h3 className="text-3xl font-bold mb-4 flex justify-center">Reservasi</h3>
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-        onClick={() => setShowModal(true)}
-      >
-        Tambah Reservasi
-      </button>
+    <>
+      <div className="flex flex-row">
+        <div className="flex flex-col sm:w-64 sm:flex-shrink-0 bg-gray-800 sm:h-screen">
+          <div className="flex items-center justify-center sm:h-20 border-b">
+            <h1 className="text-white font-bold text-xl">Dashboard</h1>
+          </div>
+          <div className="flex flex-col p-4">
+            <a
+              href="Admin"
+              className="text-gray-300 hover:text-white py-2 flex items-center"
+            >
+              <FiHome className="mr-2" />
+              <span>Beranda</span>
+            </a>
+            <a
+              href="Reservasi"
+              className="text-gray-300 hover:text-white py-2 flex items-center"
+            >
+              <FiBook className="mr-2" />
+              <span>Reservasi</span>
+            </a>
+            <a
+              href="User"
+              className="text-gray-300 hover:text-white py-2 flex items-center"
+            >
+              <FiUser className="mr-2" />
+              <span>Pengguna</span>
+            </a>
+            <a
+              href="Kamar"
+              className="text-gray-300 hover:text-white py-2 flex items-center"
+            >
+              <FiLayers className="mr-2" />
+              <span>Kamar</span>
+            </a>
+            <a
+              href="TipeKamar"
+              className="text-gray-300 hover:text-white py-2 flex items-center"
+            >
+              <FiUsers className="mr-2" />
+              <span>Tipe Kamar</span>
+            </a>
+            <button
+              className="text-gray-300 hover:text-white py-2 flex items-center"
+              onClick={handleLogout}
+            >
+              <FiLogOut className="mr-2" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
 
-      <div className="mt-8">
-        <h3 className="text-3xl font-bold mb-4">Data Pemesanan</h3>
-        <table className="min-w-full">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Nomor Pemesanan</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Nama Pemesan</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Email Pemesan</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Tanggal Check-in</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Tanggal Check-out</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Nama Tamu</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Jumlah Kamar</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">ID Tipe Kamar</th>
-              <th className="py-2 px-4 bg-gray-200 font-bold text-gray-600">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataPemesanan.map((pemesanan) => (
-              <tr key={pemesanan.nomor_pemesanan} className="border-b">
-                <td className="py-2 px-4">{pemesanan.nomor_pemesanan}</td>
-                <td className="py-2 px-4">{pemesanan.nama_pemesan}</td>
-                <td className="py-2 px-4">{pemesanan.email_pemesan}</td>
-                <td className="py-2 px-4">{pemesanan.tgl_check_in}</td>
-                <td className="py-2 px-4">{pemesanan.tgl_check_out}</td>
-                <td className="py-2 px-4">{pemesanan.nama_tamu}</td>
-                <td className="py-2 px-4">{pemesanan.jumlah_kamar}</td>
-                <td className="py-2 px-4">{pemesanan.id_tipe_kamar}</td>
-                <td className="py-2 px-4">
-                  <button
-                    className="text-blue-500 hover:text-blue-700 mr-2"
-                    onClick={() => handleEdit(pemesanan)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => handleDelete(pemesanan)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="flex-grow">
+          <div className="container mx-auto">
+            <div className="container mx-auto my-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+                  <thead>
+                    <tr>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        ID
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Nomor Pemesanan
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Nama Pemesan
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Email Pemesan
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Tgl Pemesanan
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Tgl Check In
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Tgl Check Out
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Nama Tamu
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Jumlah Kamar
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Id Tipe Kamar
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Status Pemesanan
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Id User
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="divide-y divide-gray-200">
+                    {data.map((item) => {
+                      return (
+                        <tr key={item.id}>
+                          <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                            {item.id}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                            {item.nomor_pemesanan}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.nama_pemesan}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.email_pemesan}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.tgl_pemesanan}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.tgl_check_in}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.tgl_check_out}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.nama_tamu}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.jumlah_kamar}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.id_tipe_kamar}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.status_pemesanan}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {item.id_user}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2">
+                            <div className="inline-flex rounded-lg border border-gray-100 bg-gray-100 p-1">
+                              <button
+                                className="inline-block rounded-md px-4 py-2 text-sm text-yellow-500 hover:text-gray-700 focus:relative"
+                                onClick={() => {
+                                  setSelectedItem(item);
+                                  setNomorPemesanan(item.nomor_pemesanan);
+                                  setNamaPemesan(item.nama_pemesan);
+                                  setEmailPemesan(item.email_pemesan);
+                                  setTglPemesanan(item.tgl_pemesanan);
+                                  setTglCheckIn(item.tgl_check_in);
+                                  setTglCheckOut(item.tgl_check_out);
+                                  setNamaTamu(item.nama_tamu);
+                                  setJumlahKamar(item.jumlah_kamar);
+                                  setIdTipeKamar(item.id_tipe_kamar);
+                                  setStatusPemesanan(item.status_pemesanan);
+                                  setIdUser(item.id_user);
+                                  setModalOpen(true);
+                                }}
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                className="inline-block rounded-md bg-white px-4 py-2 text-sm text-red-500 shadow-sm focus:relative"
+                                onClick={() => {
+                                  handleDelete(item.id);
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-6">
+                <button
+                  className="inline-block rounded-md bg-blue-500 text-white px-4 py-2 text-sm shadow-sm focus:relative"
+                  onClick={() => setModalOpen(true)}
+                >
+                  Add Reservasi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <Dialog open={showModal} onClose={() => setShowModal(false)}>
-          <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+      {modalOpen && (
+        <Dialog
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedItem(null);
+            setNomorPemesanan("");
+            setNamaPemesan("");
+            setEmailPemesan("");
+            setTglPemesanan("");
+            setTglCheckIn("");
+            setTglCheckOut("");
+            setNamaTamu("");
+            setJumlahKamar("");
+            setIdTipeKamar("");
+            setStatusPemesanan("");
+            setIdUser("");
+          }}
+          className="fixed inset-0 z-10 overflow-y-auto"
+        >
+          <div className="flex items-center justify-center min-h-screen px-4 text-center">
+            <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
 
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="bg-white rounded shadow-lg p-8">
-              <h3 className="text-2xl font-bold mb-4">Tambah Reservasi</h3>
-              <form onSubmit={handleSubmit}>
-                {/* Form fields */}
+            <span
+              className="inline-block h-screen align-middle"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+
+            <div className="inline-block p-6 my-8 text-left align-middle transition-all transform bg-white shadow-xl rounded-md">
+              <Dialog.Title
+                as="h3"
+                className="text-lg font-medium leading-6 text-gray-900"
+              >
+                {selectedItem ? "Edit Reservasi" : "Add Reservasi"}
+              </Dialog.Title>
+
+              <div className="mt-4">
                 <input
-                  type="text"
+                  type="hidden"
                   name="nomor_pemesanan"
-                  value={reservasi.nomor_pemesanan}
-                  onChange={handleChange}
-                  placeholder="Nomor Pemesanan"
-                  className="border rounded p-2 mb-2 w-full"
+                  id="nomor_pemesanan"
+                  value={nomorPemesanan}
+                  onChange={(e) => setNomorPemesanan(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="nama_pemesan"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Nama Pemesan
+                </label>
                 <input
                   type="text"
                   name="nama_pemesan"
-                  value={reservasi.nama_pemesan}
-                  onChange={handleChange}
-                  placeholder="Nama Pemesan"
-                  className="border rounded p-2 mb-2 w-full"
+                  id="nama_pemesan"
+                  value={namaPemesan}
+                  onChange={(e) => setNamaPemesan(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="email_pemesan"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Email pemesan
+                </label>
                 <input
-                  type="email"
+                  type="text"
                   name="email_pemesan"
-                  value={reservasi.email_pemesan}
-                  onChange={handleChange}
-                  placeholder="Email Pemesan"
-                  className="border rounded p-2 mb-2 w-full"
+                  id="email_pemesan"
+                  value={emailPemesan}
+                  onChange={(e) => setEmailPemesan(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="tglPemesanan"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Tgl Pemesanan
+                </label>
                 <input
-                  type="date"
-                  name="tgl_check_in"
-                  value={reservasi.tgl_check_in}
-                  onChange={handleChange}
-                  className="border rounded p-2 mb-2 w-full"
+                  type="text"
+                  name="tgl_pemesanan"
+                  id="tglPemesanan"
+                  value={tglPemesanan}
+                  onChange={(e) => setTglPemesanan(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 />
-                <input
-                  type="date"
-                  name="tgl_check_out"
-                  value={reservasi.tgl_check_out}
-                  onChange={handleChange}
-                  className="border rounded p-2 mb-2 w-full"
-                />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="nama_tamu"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Nama Tamu
+                </label>
                 <input
                   type="text"
                   name="nama_tamu"
-                  value={reservasi.nama_tamu}
-                  onChange={handleChange}
-                  placeholder="Nama Tamu"
-                  className="border rounded p-2 mb-2 w-full"
+                  id="nama_tamu"
+                  value={namaTamu}
+                  onChange={(e) => setNamaTamu(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="jumlah_kamar"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Jumlah Kamar
+                </label>
                 <input
                   type="number"
                   name="jumlah_kamar"
-                  value={reservasi.jumlah_kamar}
-                  onChange={handleChange}
-                  placeholder="Jumlah Kamar"
-                  className="border rounded p-2 mb-2 w-full"
+                  id="jumlah_kamar"
+                  value={jumlahKamar}
+                  onChange={(e) => setJumlahKamar(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 />
-                <select
-                  name="id_tipe_kamar"
-                  value={reservasi.id_tipe_kamar}
-                  onChange={handleChange}
-                  className="border rounded p-2 mb-2 w-full"
-                >
-                  {tipeKamar.map((tipe) => (
-                    <option key={tipe.id} value={tipe.id}>
-                      {tipe.nama_tipe_kamar}
-                    </option>
-                  ))}
-                </select>
+              </div>
 
-                {/* Buttons */}
-                <div className="flex justify-end mt-4">
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                  >
-                    Simpan
-                  </button>
-                  <button
-                    className="bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Batal
-                  </button>
-                </div>
-              </form>
+              <div className="mt-4">
+                <label
+                  htmlFor="id_tipe_kamar"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  ID Tipe Kamar
+                </label>
+                <input
+                  type="number"
+                  name="id_tipe_kamar"
+                  id="id_tipe_kamar"
+                  value={idTipeKamar}
+                  onChange={(e) => setIdTipeKamar(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="status_pemesanan"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Status Pemesanan
+                </label>
+                <input
+                  type="text"
+                  name="status_pemesanan"
+                  id="status_pemesanan"
+                  value={statusPemesanan}
+                  onChange={(e) => setStatusPemesanan(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="id_user"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  ID User
+                </label>
+                <input
+                  type="text"
+                  name="id_user"
+                  id="id_user"
+                  value={idUser}
+                  onChange={(e) => setIdUser(e.target.value)}
+                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div className="mt-6">
+                <button
+                  className="inline-block rounded-md bg-blue-500 text-white px-4 py-2 text-sm shadow-sm focus:relative mr-2"
+                  onClick={selectedItem ? handleEdit : handleAdd}
+                >
+                  {selectedItem ? "Update" : "Add"}
+                </button>
+                <button
+                  className="inline-block rounded-md bg-red-500 text-white px-4 py-2 text-sm shadow-sm focus:relative"
+                  onClick={() => {
+                    setModalOpen(false);
+                    setSelectedItem(null);
+                    setNomorPemesanan("");
+                    setNamaPemesan("");
+                    setEmailPemesan("");
+                    setTglPemesanan("");
+                    setTglCheckIn("");
+                    setTglCheckOut("");
+                    setNamaTamu("");
+                    setJumlahKamar("");
+                    setIdTipeKamar("");
+                    setStatusPemesanan("");
+                    setIdUser("");
+                  }}
+                >
+                  Batal
+                </button>
+              </div>
             </div>
           </div>
         </Dialog>
       )}
-    </div>
+    </>
   );
 }
 
-export default Reservations;
+export default Reservasi;
