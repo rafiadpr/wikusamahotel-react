@@ -6,7 +6,6 @@ import axios from "axios";
 function Login () {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const history = useNavigate();
 
   const handleLoginFailed = () => {
@@ -52,12 +51,6 @@ function Login () {
     }
   };
 
-  const renderPage = () => {
-    if (role === "admin") {
-      return <AdminPage />;
-    } else if (role === "resepsionis") {
-      return <ResepsionisPage />;
-    } else {
       return (
         <div className="flex justify-center items-center h-screen">
           <div className="bg-gray-100 p-8 rounded shadow-md">
@@ -92,27 +85,5 @@ function Login () {
         </div>
       );
     }
-  };
-
-  return <div>{renderPage()}</div>;
-};
-
-const AdminPage = () => {
-  return (
-    <div>
-      <h1>Welcome Admin!</h1>
-      {/* Tampilkan konten khusus untuk admin */}
-    </div>
-  );
-};
-
-const ResepsionisPage = () => {
-  return (
-    <div>
-      <h1>Welcome Resepsionis!</h1>
-      {/* Tampilkan konten khusus untuk resepsionis */}
-    </div>
-  );
-};
 
 export default Login;

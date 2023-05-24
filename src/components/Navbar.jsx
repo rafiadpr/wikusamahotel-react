@@ -1,21 +1,6 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react'
 
 function Navbar() {
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (!localStorage.getItem("logged")) {
-  //     navigate("/login");
-  //   }
-  // }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("logged");
-    localStorage.removeItem("admin");
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
   return (
     <>
       <header aria-label="Site Header" className="shadow-sm">

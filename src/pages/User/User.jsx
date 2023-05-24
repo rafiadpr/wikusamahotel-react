@@ -16,12 +16,12 @@ function User() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [namaUser, setNamaUser] = useState("");
-  const [User, setUser] = useState("");
+  // const [User, setUser] = useState("");
   const [foto, setFoto] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-  const url = "http://localhost:8000/foto/";
+  // const url = "http://localhost:8000/foto/";
 
   useEffect(() => {
     axios
@@ -174,6 +174,7 @@ function User() {
         </div>
 
         <div className="flex-grow">
+        <h3 className="text-3xl font-bold mb-4 flex justify-center">Data User</h3>
           <div className="container mx-auto">
             <div className="container mx-auto my-6">
               <div className="overflow-x-auto">

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Kamar from "./pages/User/Kamar";
 import Reservasi from "./pages/User/Reservasi";
 import TipeKamar from "./pages/User/TipeKamar";
@@ -19,15 +18,9 @@ import Check from "./pages/Tamu/Check";
 
 function App() {
   const location = useLocation();
-  const [role, setRole] = useState("");
-  const handleLogin = (userRole) => {
-    setRole(userRole);
-  };
-
   return (
     <>
       <div className="App">
-        {/* {role ? <Dashboard role={role} /> : <Login handleLogin={handleLogin} />} */}
         {location.pathname !== "/Login" &&
           location.pathname !== "/login" &&
           location.pathname !== "/User" &&
@@ -49,7 +42,6 @@ function App() {
           <Route path="/Resepsionis" element={<Resepsionis />} />
           <Route path="/Rooms" element={<Rooms />} />
           <Route path="Check" element={<Check />} />
-          <Route path="/Register" element={<Register />} />
           <Route path="/Reservations" element={<Reservations />} />
         </Routes>
         <Toaster />
